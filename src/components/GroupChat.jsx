@@ -46,7 +46,8 @@ const GroupChat = ({ groupId }) => {
         {messages.map((msg) => (
           <div key={msg.id} className="message">
             <p><strong>{msg.senderName}:</strong> {msg.text}</p>
-            <small>{msg.date ? new Date(msg.date.toDate()).toLocaleString() : "Sending..."}</small>
+            {/* <small>{msg.date ? new Date(msg.date.toDate()).toLocaleString() : "Sending..."}</small> */}
+            <small> {message.date ? new toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "Sending..."}</small>
           </div>
         ))}
       </div>

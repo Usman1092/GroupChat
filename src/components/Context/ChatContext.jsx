@@ -188,71 +188,142 @@
 
 //upload photo for group
 
-import { createContext, useContext, useReducer } from "react";
-import { AuthContext } from "./AuthContext";
+// import { createContext, useContext, useReducer } from "react";
+// import { AuthContext } from "./AuthContext";
 
-export const ChatContext = createContext();
+// export const ChatContext = createContext();
+
+// export const ChatContextProvider = ({ children }) => {
+//   const { currentUser } = useContext(AuthContext);
+
+//   // Default state with proper initialization
+//   const INITIAL_STATE = {
+//     chatId: "null",
+//     user: {},
+//     group: {
+//       groupId: "",
+//       members: [], // Default to empty array
+//       groupPhotoURL: "", // Add groupPhotoURL to the initial state
+//     },
+//   };
+
+//   const chatReducer = (state, action) => {
+//     switch (action.type) {
+//       case "CHANGE_USER":
+//         const userChatId =
+//           currentUser.uid > action.payload.uid
+//             ? currentUser.uid + action.payload.uid
+//             : action.payload.uid + currentUser.uid;
+//         console.log("ChatContext CHANGE_USER:", {
+//           chatId: userChatId,
+//           user: action.payload,
+//           group: INITIAL_STATE.group, // Reset group to default state
+//         });
+//         return {
+//           ...state,
+//           user: action.payload,
+//           group: INITIAL_STATE.group, // Reset group to default state
+//           chatId: userChatId,
+//         };
+//       case "CHANGE_GROUP":
+//         const groupChatId = action.payload.groupId || ""; // Default to empty string if groupId is missing
+//         console.log("ChatContext CHANGE_GROUP:", {
+//           chatId: groupChatId,
+//           group: action.payload,
+//           user: state.user, // Maintain previous user state
+          
+//         });
+//         return {
+//           ...state,
+//           user: INITIAL_STATE.user, // Reset user to default state
+//           group: {
+//             groupId: groupChatId,
+//             members: action.payload.members || [], // Default to empty array if members are missing
+//             groupPhotoURL: action.payload.groupPhotoURL || "", // Add groupPhotoURL
+//           },
+//           chatId: groupChatId,
+//         };
+//       default:
+//         return state;
+//     }
+//   };
+
+//   const [state, dispatch] = useReducer(chatReducer, INITIAL_STATE);
+
+//   return (
+//     <ChatContext.Provider value={{ data: state, dispatch }}>
+//       {children}
+//     </ChatContext.Provider>
+//   );
+// };
+
+
+
+
+
+
+import React, { createContext, useReducer } from "react";
+
+const INITIAL_STATE = {
+  user: null,
+  chatId: null,
+  isGroup: false,
+};
+
+const ChatReducer = (state, action) => {
+  switch (action.type) {
+    case "CHANGE_USER":
+      return {
+        user: action.payload,
+        chatId: action.payload.uid,
+        isGroup: false,
+      };
+    case "CHANGE_GROUP":
+      return {
+        user: action.payload,
+        chatId: action.payload.id,
+        isGroup: true,
+      };
+    default:
+      return state;
+  }
+};
+
+export const ChatContext = createContext(INITIAL_STATE);
 
 export const ChatContextProvider = ({ children }) => {
-  const { currentUser } = useContext(AuthContext);
-
-  // Default state with proper initialization
-  const INITIAL_STATE = {
-    chatId: "null",
-    user: {},
-    group: {
-      groupId: "",
-      members: [], // Default to empty array
-      groupPhotoURL: "", // Add groupPhotoURL to the initial state
-    },
-  };
-
-  const chatReducer = (state, action) => {
-    switch (action.type) {
-      case "CHANGE_USER":
-        const userChatId =
-          currentUser.uid > action.payload.uid
-            ? currentUser.uid + action.payload.uid
-            : action.payload.uid + currentUser.uid;
-        console.log("ChatContext CHANGE_USER:", {
-          chatId: userChatId,
-          user: action.payload,
-          group: INITIAL_STATE.group, // Reset group to default state
-        });
-        return {
-          ...state,
-          user: action.payload,
-          group: INITIAL_STATE.group, // Reset group to default state
-          chatId: userChatId,
-        };
-      case "CHANGE_GROUP":
-        const groupChatId = action.payload.groupId || ""; // Default to empty string if groupId is missing
-        console.log("ChatContext CHANGE_GROUP:", {
-          chatId: groupChatId,
-          group: action.payload,
-          user: state.user, // Maintain previous user state
-          
-        });
-        return {
-          ...state,
-          user: INITIAL_STATE.user, // Reset user to default state
-          group: {
-            groupId: groupChatId,
-            members: action.payload.members || [], // Default to empty array if members are missing
-            groupPhotoURL: action.payload.groupPhotoURL || "", // Add groupPhotoURL
-          },
-          chatId: groupChatId,
-        };
-      default:
-        return state;
-    }
-  };
-
-  const [state, dispatch] = useReducer(chatReducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer(ChatReducer, INITIAL_STATE);
 
   return (
-    <ChatContext.Provider value={{ data: state, dispatch }}>
+    <ChatContext.Provider
+      value={{
+        data: state,
+        dispatch,
+      }}
+    >
       {children}
     </ChatContext.Provider>
   );
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-//upload photo  while creating group
+// upload photo  while creating group
 import React, { useState, useContext } from "react";
 import { db, storage } from "../firebase";
 import {
@@ -56,20 +56,16 @@ const CreateGroup = () => {
       console.log("Group must have a name and at least 1 other member");
       return;
     }
-
+  
     const groupId = uuid();
     const groupMembers = [
       ...members,
-      {
-        uid: currentUser.uid,
-        displayName: currentUser.displayName,
-        photoURL: currentUser.photoURL,
-      },
+      { uid: currentUser.uid, displayName: currentUser.displayName, photoURL: currentUser.photoURL }
     ];
-
+  
     try {
       let groupPhotoURL = "";
-
+  
       if (groupPhoto) {
         const storageRef = ref(storage, `groupPhotos/${groupId}`);
         const uploadTask = uploadBytesResumable(storageRef, groupPhoto);
@@ -90,7 +86,8 @@ const CreateGroup = () => {
           );
         });
       }
-
+  
+      // Create the group document in Firestore
       await setDoc(doc(db, "groups", groupId), {
         name: groupName,
         members: groupMembers,
@@ -98,31 +95,101 @@ const CreateGroup = () => {
         groupPhotoURL,
       });
       console.log("Group document created");
-
+  
       for (let member of groupMembers) {
         const userGroupDocRef = doc(db, "userGroups", member.uid);
-        await setDoc(
-          userGroupDocRef,
-          {
-            [groupId]: {
-              groupName,
-              groupId,
-              date: serverTimestamp(),
-              groupPhotoURL,
-            },
+        await setDoc(userGroupDocRef, {
+          [groupId]: {
+            groupName,
+            groupId,
+            date: serverTimestamp(),
+            groupPhotoURL,
+            isGroup: true, // Mark as group
           },
-          { merge: true }
-        );
+        }, { merge: true });
         console.log(`Updated userGroups for ${member.uid}`);
       }
     } catch (error) {
       console.error("Error creating group:", error);
     }
-
+  
     setGroupName("");
     setMembers([]);
     setGroupPhoto(null); // Reset group photo
   };
+  
+  // const handleCreateGroup = async () => {
+  //   if (!groupName || members.length < 1) {
+  //     console.log("Group must have a name and at least 1 other member");
+  //     return;
+  //   }
+
+  //   const groupId = uuid();
+  //   const groupMembers = [
+  //     ...members,
+  //     {
+  //       uid: currentUser.uid,
+  //       displayName: currentUser.displayName,
+  //       photoURL: currentUser.photoURL,
+  //     },
+  //   ];
+
+  //   try {
+  //     let groupPhotoURL = "";
+
+  //     if (groupPhoto) {
+  //       const storageRef = ref(storage, `groupPhotos/${groupId}`);
+  //       const uploadTask = uploadBytesResumable(storageRef, groupPhoto);
+  //       await new Promise((resolve, reject) => {
+  //         uploadTask.on(
+  //           "state_changed",
+  //           (snapshot) => {
+  //             // Progress monitoring if needed
+  //           },
+  //           (error) => {
+  //             console.error("Upload error:", error);
+  //             reject(error);
+  //           },
+  //           async () => {
+  //             groupPhotoURL = await getDownloadURL(uploadTask.snapshot.ref);
+  //             resolve();
+  //           }
+  //         );
+  //       });
+  //     }
+
+  //     await setDoc(doc(db, "groups", groupId), {
+  //       name: groupName,
+  //       members: groupMembers,
+  //       messages: [],
+  //       groupPhotoURL,
+  //     });
+  //     console.log("Group document created");
+
+  //     for (let member of groupMembers) {
+  //       const userGroupDocRef = doc(db, "userGroups", member.uid);
+  //       await setDoc(
+  //         userGroupDocRef,
+  //         {
+  //           [groupId]: {
+  //             groupName,
+  //             groupId,
+  //             date: serverTimestamp(),
+  //             groupPhotoURL,
+  //           },
+  //         },
+  //         { merge: true }
+  //       );
+  //       console.log(`Updated userGroups for ${member.uid}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error creating group:", error);
+  //   }
+
+  //   setGroupName("");
+  //   setMembers([]);
+  //   setGroupPhoto(null); // Reset group photo
+  // };
 
   return (
     <div className="flex flex-col space-y-2">
@@ -171,3 +238,6 @@ const CreateGroup = () => {
 };
 
 export default CreateGroup;
+
+
+
