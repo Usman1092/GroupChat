@@ -1,8 +1,6 @@
 import React from "react";
 import { SideBar } from "../components/SideBar";
 import Chat from "../components/Chat";
-import CreateGroup from "../components/groupCreate"
-import GroupChat from "../components/GroupChat";
 import {v4 as uuid} from 'uuid';
 
 export const Home = () => {
@@ -13,8 +11,7 @@ export const Home = () => {
       <div className="container flex border rounded-md border-[#fff] overflow-hidden h-[500px] ">
         <SideBar />
         <Chat />
-        {/* <CreateGroup /> */}
-        <GroupChat groupId={groupId}/>
+      
       </div>
     </div>
   );

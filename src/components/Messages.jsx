@@ -23,12 +23,13 @@ export const Messages = () => {
   useEffect(() => {
     if (!data.groupId) return;
 
-    const unsub = onSnapshot(doc(db, "groups", data.groupId), (doc) => {
+    const unsubcribe = onSnapshot(doc(db, "groups", data.groupId), (doc) => {
       doc.exists() && setMessages(doc.data().messages);
     });
 
     return () => {
       unsub();
+      unsubcribe();
     };
   }, [data.groupId]);
 
